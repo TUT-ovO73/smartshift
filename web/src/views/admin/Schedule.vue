@@ -18,7 +18,7 @@
       <el-table :data="item.assignments || []" border size="small">
         <el-table-column label="成员" min-width="120">
           <template #default="{ row }">
-            {{ row.user?.name || row.user?.username || ('#' + row.user_id) }}
+            {{ row.name || row.username || ('#' + row.user_id) }}
           </template>
         </el-table-column>
         <el-table-column label="评分" width="200">
@@ -80,7 +80,10 @@ const team = useTeamStore()
 const schedule = useScheduleStore()
 const publishing = ref(false)
 
-const today = new Date().toISOString().slice(0, 10)
+function localDate(d = new Date()) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+const today = localDate()
 const from = ref(today)
 const to = ref(today)
 
@@ -137,7 +140,8 @@ function onSwap(item, idx, newUserId) {
   item.assignments[idx] = {
     ...a,
     user_id: newUserId,
-    user: m ? { name: m.name, username: m.username } : a.user,
+    name: m?.name || a.name,
+    username: m?.username || a.username,
   }
 }
 

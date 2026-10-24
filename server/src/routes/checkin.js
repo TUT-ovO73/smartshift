@@ -16,13 +16,18 @@ router.post('/:id/checkin', (req, res) => {
   }
   if (asg.status === 'confirmed') return res.status(400).json({ error: '已确认完成' });
   if (asg.status === 'absent') return res.status(400).json({ error: '已标记缺席' });
+  if (asg.status === 'checked_in') return res.status(400).json({ error: '已签到，请勿重复签到' });
   const method = req.body?.method || 'button';
   db.prepare(`
     UPDATE assignments SET status = 'checked_in', check_in_time = datetime('now'),
                           check_in_method = ?
     WHERE id = ?
   `).run(method, req.params.id);
-  const updated = db.prepare(`SELECT * FROM assignments WHERE id = ?`).get(req.params.id);
+  const updated = db.prepare(`
+    SELECT a.*, s.title, s.date, s.start_time, s.end_time, s.location_text, s.is_special
+    FROM assignments a JOIN shifts s ON s.id = a.shift_id
+    WHERE a.id = ?
+  `).get(req.params.id);
   res.json({ assignment: updated });
 });
 
@@ -52,6 +57,8 @@ router.post('/:id/confirm', requireRole(ROLES.SUPER_ADMIN, ROLES.SCHEDULE_ADMIN)
 router.post('/:id/absent', requireRole(ROLES.SUPER_ADMIN, ROLES.SCHEDULE_ADMIN), (req, res) => {
   const asg = db.prepare(`SELECT * FROM assignments WHERE id = ?`).get(req.params.id);
   if (!asg) return res.status(404).json({ error: '排班不存在' });
+  if (asg.status === 'confirmed') return res.status(400).json({ error: '已确认完成，不可标记缺席' });
+  if (asg.status === 'absent') return res.status(400).json({ error: '已标记缺席' });
   db.prepare(`UPDATE assignments SET status = 'absent' WHERE id = ?`).run(req.params.id);
   penalizeAbsent(asg);
   res.json({ ok: true });

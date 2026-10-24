@@ -15,9 +15,9 @@
     <h3>今日值班</h3>
     <div v-if="todayAssignments.length" class="card-grid">
       <el-card v-for="a in todayAssignments" :key="a.id" shadow="hover">
-        <div class="as-title">{{ a.shift?.title || '班次' }}</div>
-        <div class="as-row">{{ a.shift?.date }} {{ a.shift?.start_time }} - {{ a.shift?.end_time }}</div>
-        <div class="as-row" v-if="a.shift?.location_text">地点：{{ a.shift.location_text }}</div>
+        <div class="as-title">{{ a.title || '班次' }}</div>
+        <div class="as-row">{{ a.date }} {{ a.start_time }} - {{ a.end_time }}</div>
+        <div class="as-row" v-if="a.location_text">地点：{{ a.location_text }}</div>
         <div class="as-row">
           <el-tag :type="statusType(a.status)" size="small">{{ statusLabel(a.status) }}</el-tag>
         </div>
@@ -47,7 +47,10 @@ const auth = useAuthStore()
 const assignmentStore = useAssignmentStore()
 const points = usePointsStore()
 
-const today = new Date().toISOString().slice(0, 10)
+function localDate(d = new Date()) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+const today = localDate()
 const checkingId = ref(0)
 
 const STATUS_MAP = {
@@ -60,7 +63,7 @@ const statusLabel = (s) => STATUS_MAP[s]?.label || s || '-'
 const statusType = (s) => STATUS_MAP[s]?.type || 'info'
 
 const todayAssignments = computed(() =>
-  assignmentStore.list.filter((a) => a.shift?.date === today && a.user_id === auth.user?.id)
+  assignmentStore.list.filter((a) => a.date === today && a.user_id === auth.user?.id)
 )
 
 onMounted(async () => {

@@ -4,12 +4,12 @@
 
     <h3>我的班次</h3>
     <el-table :data="myAssignments" border v-loading="loadingMine">
-      <el-table-column prop="shift.title" label="班次" min-width="120" />
+      <el-table-column prop="title" label="班次" min-width="120" />
       <el-table-column label="日期">
-        <template #default="{ row }">{{ row.shift?.date }}</template>
+        <template #default="{ row }">{{ row.date }}</template>
       </el-table-column>
       <el-table-column label="时间">
-        <template #default="{ row }">{{ row.shift?.start_time }} - {{ row.shift?.end_time }}</template>
+        <template #default="{ row }">{{ row.start_time }} - {{ row.end_time }}</template>
       </el-table-column>
       <el-table-column label="状态" width="120">
         <template #default="{ row }">
@@ -34,12 +34,12 @@
     <template v-if="auth.isAdmin">
       <h3 style="margin-top:24px">团队班次管理</h3>
       <el-table :data="teamAssignments" border v-loading="loadingTeam">
-        <el-table-column prop="user.name" label="成员" min-width="100">
-          <template #default="{ row }">{{ row.user?.name || row.user?.username }}</template>
+        <el-table-column prop="name" label="成员" min-width="100">
+          <template #default="{ row }">{{ row.name || row.username }}</template>
         </el-table-column>
-        <el-table-column prop="shift.title" label="班次" min-width="120" />
+        <el-table-column prop="title" label="班次" min-width="120" />
         <el-table-column label="时间">
-          <template #default="{ row }">{{ row.shift?.date }} {{ row.shift?.start_time }}-{{ row.shift?.end_time }}</template>
+          <template #default="{ row }">{{ row.date }} {{ row.start_time }}-{{ row.end_time }}</template>
         </el-table-column>
         <el-table-column label="状态" width="120">
           <template #default="{ row }">
