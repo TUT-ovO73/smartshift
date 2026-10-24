@@ -1,0 +1,8 @@
+{
+  "name": "smartshift-ppt",
+  "version": "1.0.0",
+  "description": "SmartShift 方案说明 PPT 生成脚本",
+  "dependencies": {
+    "pptxgenjs": "^3.12.0"
+  }
+}

@@ -1,0 +1,10 @@
+**/node_modules
+server/data
+web/dist
+ppt
+.git
+.trae
+*.pptx
+*.doc
+Dockerfile
+.dockerignore
